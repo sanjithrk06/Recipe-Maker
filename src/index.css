@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CSS */
+.scroll-container::-webkit-scrollbar {
+    width: 0px; /* Hide scrollbar */
+    background: transparent; /* Optional: Background color behind the scrollbar track */
+  }
+  
+  .scroll-container {
+    /* Set height and overflow */
+    max-height: calc(100% - 180px);
+    overflow-y: auto;
+  }
