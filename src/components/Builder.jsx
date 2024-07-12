@@ -109,7 +109,7 @@ const Builder = ({ type, setSaveClicked }) => {
   return (
     <div className="w-2/4 bg-white border border-gray-300 rounded-3xl m-2 p-4">
       <div className="flex-1 flex flex-col items-center justify-between h-full">
-        <div className="flex justify-end gap-3 w-full h-[10%] px-2 py-4">
+        {/* <div className="flex justify-end gap-3 w-full h-[10%] px-2 py-4">
           <div className="flex flex-row gap-2">
             <button onClick={handleSave} className={`bg-blue-600 text-white p-2 px-4 py-1 pb-[0.4rem] w-auto rounded-xl flex items-center font-medium text-base ${(setSaveClicked == true || droppedItems.length<1) ? "opacity-50" : ""}`} disabled={droppedItems.length === 0} >
               Save
@@ -118,7 +118,7 @@ const Builder = ({ type, setSaveClicked }) => {
               <HiDotsVertical />
             </button>
           </div>
-        </div>
+        </div> */}
 
 
         
@@ -126,7 +126,7 @@ const Builder = ({ type, setSaveClicked }) => {
           ref={drop}
           id='drop-box'
           style={{ scrollbarWidth: 'none'}}
-          className={`flex items-center overflow-y-auto justify-center border-2 border-dashed rounded-2xl ${isOver ? 'border-blue-500' : 'border-gray-300'} w-full h-[90%]`}
+          className={`flex items-center mt-5 overflow-y-auto justify-center border-2 border-dashed rounded-2xl ${isOver ? 'border-blue-500' : 'border-gray-300'} w-full h-[90%]`}
         >
           <div className="p-4 pt-0 w-[95%] h-[90%]" style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'center' }}>
             {droppedItems.length < 1 && (
@@ -168,17 +168,9 @@ const Builder = ({ type, setSaveClicked }) => {
             </button>
           </div>
           <div className="item-right">
-            <div className="flex items-center gap-2 border border-gray-700 rounded-lg p-2">
-              <button onClick={handleZoomOut} className="bg-transparent text-black leading-none rounded-lg text-lg">
-                <RxZoomOut className="text-gray-700" />
-              </button>
-              <div className="px-2 font-semibold text-gray-700">
-                <span>{Math.round(zoomLevel * 100)}%</span>
-              </div>
-              <button onClick={handleZoomIn} className="bg-transparent text-black leading-none rounded-lg text-lg">
-                <RxZoomIn className="text-gray-700" />
-              </button>
-            </div>
+            <button onClick={handleSave} className={`bg-blue-600 text-white p-2 px-4 py-4 pb-[0.4rem] w-auto rounded-xl flex items-center font-medium text-base ${(setSaveClicked == true || droppedItems.length<1) ? "opacity-50" : ""}`} disabled={droppedItems.length === 0} >
+              Save & continue
+            </button>
           </div>
         </div>
       </div>

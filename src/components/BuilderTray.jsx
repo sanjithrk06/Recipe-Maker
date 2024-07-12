@@ -32,10 +32,7 @@ const BuilderTray = ({ type, setSaveClicked }) => {
   const handleSave = () => {
     updateTrays(Object.keys(droppedItemsPerTray).reduce((tray, trayIndex) => {
         tray[`Tray ${Number(trayIndex) + 1}`] = droppedItemsPerTray[trayIndex].map(item => ({
-          ingredient: item.name,
-          variety: "Pureed",  
-          value: item.value, 
-          unit: item.unit
+          ingredient: item.name
         }));
         return tray;
       }, {}));
@@ -76,9 +73,10 @@ const BuilderTray = ({ type, setSaveClicked }) => {
     const [{ isOver }, drop] = useDrop(() => ({
       accept: ItemTypes.INGREDIENT,
       drop: (item) => {
-        setCurrentItem(item.ingredient);
-        setCurrentTray(index);
-        setIsModalOpen(true);
+        setDroppedItemsPerTray((prevState) => ({
+          ...prevState,
+          [index]: [...(prevState[index] || []), item.ingredient],
+        }));
         console.log(`Dropped ${item.ingredient.name} in tray ${index}`);
       },
       collect: (monitor) => ({
@@ -125,19 +123,19 @@ const BuilderTray = ({ type, setSaveClicked }) => {
   return (
     <div className="w-2/4 bg-white border border-gray-300 rounded-3xl m-2 p-4">
       <div className="flex-1 flex flex-col items-center justify-between h-full">
-        <div className="flex justify-end gap-3 w-full h-[10%] px-2 py-4">
+        {/* <div className="flex justify-end gap-3 w-full h-[10%] px-2 py-4">
           <div className="flex flex-row gap-2">
             <button onClick={handleSave} className={`bg-blue-600 text-white p-2 px-4 py-1 pb-[0.4rem] w-auto rounded-xl flex items-center font-medium text-base ${(setSaveClicked == true || droppedItemsPerTray.length<1) ? "opacity-50" : ""}`} disabled={droppedItemsPerTray.length === 0} >
-              Save
+              Save & continue
             </button>
             <button className="bg-white text-black p-2 rounded-lg text-lg">
               <HiDotsVertical />
             </button>
           </div>
-        </div>
+        </div> */}
 
         {type === 'ingredients' && (
-          <div className='grid grid-cols-1 gap-5 w-full h-[90%] overflow-y-auto' style={{ scrollbarWidth: 'none' }}>
+          <div className='grid grid-cols-1 mt-5 gap-5 w-full h-[90%] overflow-y-auto' style={{ scrollbarWidth: 'none' }}>
             {[...Array(6)].map((_, index) => renderDropBox(index))}
           </div>
         )}
@@ -156,17 +154,9 @@ const BuilderTray = ({ type, setSaveClicked }) => {
             </button> */}
           </div>
           <div className="item-right">
-            <div className="flex items-center gap-2 border border-gray-700 rounded-lg p-2">
-              <button onClick={handleZoomOut} className="bg-transparent text-black leading-none rounded-lg text-lg">
-                <RxZoomOut className="text-gray-700" />
+            <button onClick={handleSave} className={`bg-blue-600 text-white p-2 px-4 py-1.5 pb-[0.5rem] w-auto rounded-xl flex items-center font-medium text-base ${(setSaveClicked == true || droppedItemsPerTray.length<1) ? "opacity-50" : ""}`} disabled={droppedItemsPerTray.length === 0} >
+                Save & continue
               </button>
-              <div className="px-2 font-semibold text-gray-700">
-                <span>{Math.round(zoomLevel * 100)}%</span>
-              </div>
-              <button onClick={handleZoomIn} className="bg-transparent text-black leading-none rounded-lg text-lg">
-                <RxZoomIn className="text-gray-700" />
-              </button>
-            </div>
           </div>
         </div>
       </div>
