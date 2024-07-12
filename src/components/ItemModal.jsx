@@ -54,7 +54,7 @@ const ItemModal = ({ isOpen, item, onSave, onCancel }) => {
                         value={unit}
                         onChange={(e) => setUnit(e.target.value)}
                     >
-                        <option value="" disabled hidden></option>
+                        <option value="" disabled hidden>Select variety</option>
                         <option value="none" className="bg-white text-gray-900 hover:bg-gray-100">None</option>
                         <option value="gm" className="bg-white text-gray-900 hover:bg-gray-100">gm</option>
                         <option value="ml" className="bg-white text-gray-900 hover:bg-gray-100">ml</option>
