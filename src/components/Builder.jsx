@@ -168,7 +168,7 @@ const Builder = ({ type, setSaveClicked }) => {
             </button>
           </div>
           <div className="item-right">
-            <button onClick={handleSave} className={`bg-blue-600 text-white p-2 px-4 py-4 pb-[0.4rem] w-auto rounded-xl flex items-center font-medium text-base ${(setSaveClicked == true || droppedItems.length<1) ? "opacity-50" : ""}`} disabled={droppedItems.length === 0} >
+            <button onClick={handleSave} className={`bg-blue-600 text-white p-2 px-4 py-1.5 pb-[0.5rem] w-auto rounded-xl flex items-center font-medium text-base ${(setSaveClicked == true || droppedItems.length<1) ? "opacity-50" : ""}`} disabled={droppedItems.length === 0} >
               Save & continue
             </button>
           </div>
