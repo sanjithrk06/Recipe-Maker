@@ -1,9 +1,6 @@
 import { useDrop } from 'react-dnd';
 import { useEffect, useState } from 'react';
 import { FaPlusCircle, FaRedo } from 'react-icons/fa';
-import { IoArrowRedoOutline, IoArrowUndoOutline } from "react-icons/io5";
-import { RxZoomIn, RxZoomOut } from "react-icons/rx";
-import { HiDotsVertical } from "react-icons/hi";
 import PropTypes from 'prop-types';
 import { useRecipe } from '../context/RecipeContext';
 import ItemModal from './ItemModal';
@@ -37,7 +34,6 @@ const BuilderTray = ({ type, setSaveClicked }) => {
         return tray;
       }, {}));
     setSaveClicked(true);
-    alert("Saved");
   };
 
   const handleZoomIn = () => {

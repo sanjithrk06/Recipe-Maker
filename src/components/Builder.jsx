@@ -12,8 +12,6 @@ const ItemTypes = {
   INGREDIENT: 'ingredient',
 };
 
-
-
 const Builder = ({ type, setSaveClicked }) => {
   const [droppedItems, setDroppedItems] = useState([]);
   const [history, setHistory] = useState([]);
@@ -35,7 +33,6 @@ const Builder = ({ type, setSaveClicked }) => {
       if(type==='instructions'){
         setCurrentItem(item.ingredient)
         setIsModalOpen(true)
-        console.log(currentItem)
       }else{
         setDroppedItems((prevItems) => [...prevItems, item.ingredient]);
       }
@@ -63,7 +60,6 @@ const Builder = ({ type, setSaveClicked }) => {
     }
     console.log('Saved to context:', droppedItems.map(item => item.name));
     setSaveClicked(true)
-    alert("Saved")
   };
 
   const handleZoomIn = () => {
@@ -109,19 +105,6 @@ const Builder = ({ type, setSaveClicked }) => {
   return (
     <div className="w-2/4 bg-white border border-gray-300 rounded-3xl m-2 p-4">
       <div className="flex-1 flex flex-col items-center justify-between h-full">
-        {/* <div className="flex justify-end gap-3 w-full h-[10%] px-2 py-4">
-          <div className="flex flex-row gap-2">
-            <button onClick={handleSave} className={`bg-blue-600 text-white p-2 px-4 py-1 pb-[0.4rem] w-auto rounded-xl flex items-center font-medium text-base ${(setSaveClicked == true || droppedItems.length<1) ? "opacity-50" : ""}`} disabled={droppedItems.length === 0} >
-              Save
-            </button>
-            <button className="bg-white text-black p-2 rounded-lg text-lg">
-              <HiDotsVertical />
-            </button>
-          </div>
-        </div> */}
-
-
-        
         <div
           ref={drop}
           id='drop-box'
@@ -136,20 +119,26 @@ const Builder = ({ type, setSaveClicked }) => {
               </div>
             )}
             {droppedItems.length > 0 && (
-              <>
+              <div className=' mb-5'>
                 <p className="text-center text-3xl font-bold m-2">{type === 'ingredients' ? 'Ingredients' : type === 'spices' ? 'Spices' : 'Instruction'}</p>
-                <div className="mt-6 grid grid-cols-5 gap-5">
+                <div className="mt-6 grid grid-cols-2 gap-3">
                   {droppedItems.map((item, index) => (
-                    <div key={index} className="flex flex-col justify-end items-center">
-                      <div className="flex flex-col items-center justify-center bg-gray-200 gap-3 rounded-3xl w-full p-2 pt-0">
-                        <img src={item.image} alt={item.name} className={`w-[95%] h-28 ${item.type==='instructions' ? 'object-contain p-4': 'object-cover'} rounded-2xl m-2 mb-0`} />
-                        <p className="text-center">{item.name}</p>
+                    <div key={index} className="flex flex-col justify-end items-center mb-2">
+                      <div className="flex flex-row items-center justify-center bg-gray-200 gap-1 rounded-3xl w-full p-2 pt-0">
+                        <div className="flex flex-col w-1/3">
+                          <img src={item.image} alt={item.name} className={` w-full h-[5rem] ${item.type==='instructions' ? 'object-contain p-4': 'object-cover'} rounded-2xl m-2 mb-0`} />
+                        </div>
+                        <div className="flex flex-col w-2/3">
+                          <p className="text-center text-lg font-semibold">{item.name}</p>
+                          <p className="text-center">{type === 'ingredients' ? '' : type === 'spices' ? '' : `${item.value} ${item.unit}`}</p> 
+                          <p className="text-center">{type === 'ingredients' ? '' : type === 'spices' ? '' : `${item.variety}`}</p> 
+                        </div>
                       </div>
-                      <p className="font-semibold text-base m-2">{type === 'ingredients' ? '' : type === 'spices' ? '' : `STEP-${index + 1}`}</p>
+                      {type === 'ingredients' ? '' : type === 'spices' ? '' : <p className="font-semibold text-base m-2">STEP-{index + 1}</p>}
                     </div>
                   ))}
                 </div>
-              </>
+              </div>
             )}
           </div>
         </div>

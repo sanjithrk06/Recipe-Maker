@@ -1,63 +1,42 @@
 import PropTypes from 'prop-types';
-import { useDrag } from 'react-dnd';
-import { data } from '../data/data';
 import { useEffect, useState } from 'react';
 import { useRecipe } from '../context/RecipeContext';
-
-const ItemTypes = {
-  INGREDIENT: 'ingredient',
-};
-
-const Ingredient = ({ ingredient }) => {
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: ItemTypes.INGREDIENT,
-    item: { ingredient },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  }));
-
-  return (
-    <div
-      ref={drag}
-      className={`bg-gray-100 p-2 cursor-move rounded-2xl ${isDragging ? 'opacity-50' : 'opacity-100'}`}
-    >
-      <div className="w-full">
-        <img src={ingredient.image} alt={ingredient.name} className={` w-full h-32 ${ingredient.type==='instructions' ? 'object-contain p-4 h-20': 'object-cover'} rounded-2xl `} />
-      </div>
-      <p className="text-center mt-1 p-2 text-sm font-medium">
-        {ingredient.name}
-      </p>
-    </div>
-  );
-};
-
-Ingredient.propTypes = {
-  ingredient: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-    image: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-  }).isRequired,
-};
+import Ingredient from './Ingredient';
+import Instruction from './Instruction';
+import Accordion from './Accordion';
+import { data } from '../data/data';
+import LoadingSpinner from './LoadingSpinner';
 
 const Sidebar = ({ type }) => {
   const [ingredients, setIngredients] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const { recipe } = useRecipe()
+  const { recipe } = useRecipe();
+  const [isInstructionsOpen, setInstructionsOpen] = useState(false);
+  const [isIngredientsOpen, setIngredientsOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      setIngredients(data);
+    const fetchIngredients = async () => {
+      try {
+        
+        setTimeout(() => {
+          setIngredients(data);
+          setLoading(false); 
+        }, 2000); 
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setLoading(false); 
+      }
     };
 
-    fetchEvents();
-  }, [type]);
+    fetchIngredients();
+  }, []);
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
 
+  
   const filteredIngredients = ingredients.filter(
     (ingredient) =>
       ingredient.type === type &&
@@ -76,12 +55,16 @@ const Sidebar = ({ type }) => {
       const ingredient = ingredients.find(ing => ing.name.toLowerCase() === trayItem.ingredient.toLowerCase());
       return ingredient;
     }).filter(ingredient => ingredient !== undefined);
-    return { trayName, trayIngredients };
-  });
-  
+    return trayIngredients;
+  }).flat();
+
+  const combinedIngredients = [
+    ...filteredSpicesIngredients,
+    ...filteredTrays
+  ];
 
   return (
-    <div className="w-1/4 bg-white border border-gray-300 rounded-3xl m-2 p-4 overflow-hidden">
+    <div className="w-[27%] bg-white border border-gray-300 rounded-3xl m-2 p-4 overflow-hidden">
       <div className="mb-4">
         {type === 'spices' && (
           <h1 className="text-3xl text-center italic font-semibold p-5">Spices</h1>
@@ -121,51 +104,53 @@ const Sidebar = ({ type }) => {
       </div>
 
       <div className="scroll-container">
-        
-          {type==='instructions' ? (
-            <>
-            {filteredIngredients.length>0 && <h2 className=' font-semibold italic text-xl p-2 my-2 mt-2'>Instructions</h2>}
-            <div className="grid grid-cols-3 gap-2">
-              {filteredIngredients.map((ingredient) => (
+        {type === 'instructions' ? (
+          <>
+            <Accordion
+              title="Instructions"
+              isOpen={isInstructionsOpen}
+              onToggle={() => setInstructionsOpen(!isInstructionsOpen)}
+            >
+              {loading ? (
+                <LoadingSpinner />
+              ) : (
+                <div className="flex flex-col gap-2">
+                  {filteredIngredients.map((ingredient) => (
+                    <Instruction key={ingredient.id} ingredient={ingredient} />
+                  ))}
+                </div>
+              )}
+            </Accordion>
+            <hr />
+            <Accordion
+              title="Ingredients & Spices"
+              isOpen={isIngredientsOpen}
+              onToggle={() => setIngredientsOpen(!isIngredientsOpen)}
+            >
+              {loading ? (
+                <LoadingSpinner />
+              ) : (
+                <div className="grid grid-cols-3 gap-2">
+                  {combinedIngredients.map((ingredient) => (
+                    <Ingredient key={ingredient.id} ingredient={ingredient} />
+                  ))}
+                </div>
+              )}
+            </Accordion>
+            <hr />
+          </>
+        ) : (
+          <>
+            {loading ? (
+              <LoadingSpinner />
+            ) : (
+              <div className="grid grid-cols-3 gap-2">
+                {filteredIngredients.map((ingredient) => (
                   <Ingredient key={ingredient.id} ingredient={ingredient} />
                 ))}
-            </div>
-            {filteredSpicesIngredients.length>0 && 
-              <>
-              <br />
-              <hr />
-              <h2 className=' font-semibold text-xl p-2 my-2 mt-2 italic'>Spices</h2>
-              </>
-            }
-            <div className="grid grid-cols-3 gap-2">
-              {filteredSpicesIngredients.map((ingredient) => (
-                  <Ingredient key={ingredient.id} ingredient={ingredient} />
-                ))}
-            </div>
-            {filteredTrays.length > 0 && 
-  filteredTrays.map(({ trayName, trayIngredients }, trayIndex) => (
-    <div key={trayIndex}>
-      <br />
-      <hr /> 
-      <h2 className='font-semibold text-xl p-2 my-2 mt-2 italic'>{trayName}</h2>
-      <div className="grid grid-cols-3 gap-2 mb-4">
-        {trayIngredients.map((ingredient) => (
-          <Ingredient key={ingredient.id} ingredient={ingredient} />
-        ))}
-      </div>
-    </div>
-  ))
-}
-
-            
-            </>
-          ):(
-          <div className="grid grid-cols-3 gap-2">
-            {filteredIngredients.map((ingredient) => (
-                <Ingredient key={ingredient.id} ingredient={ingredient} />
-              ))}
-          </div>
-        
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

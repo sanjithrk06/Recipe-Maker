@@ -38,7 +38,7 @@ const FieldSettings = ({ type, onTypeChange, saveClicked }) => {
 
 
   return (
-    <div className="w-1/4 flex flex-col justify-between bg-white border border-gray-300 rounded-3xl m-2 p-6">
+    <div className="w-[20%] flex flex-col justify-between bg-white border border-gray-300 rounded-3xl m-2 p-6">
         <div className="">
             <div className="mb-4 mt-4 p-2">
                 <h2 className=" text-base font-medium pb-2">ADD A FIELD</h2>
