@@ -64,7 +64,7 @@ const Sidebar = ({ type }) => {
   ];
 
   return (
-    <div className="w-[27%] bg-white border border-gray-300 rounded-3xl m-2 p-4 overflow-hidden">
+    <div className="w-[27%] max-md:w-full bg-white border border-gray-300 rounded-3xl m-2 p-4 overflow-hidden">
       <div className="mb-4">
         {type === 'spices' && (
           <h1 className="text-3xl text-center italic font-semibold p-5">Spices</h1>

@@ -3,14 +3,14 @@ import React, { createContext, useContext, useState } from 'react';
 const RecipeContext = createContext();
 
 const defaultRecipe = {
-  name: "Veg Mac & Cheese",
-  author: "Mome",
-  cuisine: "italian",
-  category: "main_course",
-  servings: 4,
-  prep_time_min: 30,
-  origin: "Italy",
-  source: "Adit",
+  name: "",
+  author: "",
+  cuisine: "",
+  category: "",
+  servings: 0,
+  prep_time_min: 0,
+  origin: "",
+  source: "",
   liquids: { "oil": "None", "water": "Regular water" },
   spices: [],
   trays: {},
@@ -34,6 +34,10 @@ export const RecipeProvider = ({ children }) => {
     setRecipe((prevRecipe) => ({ ...prevRecipe, spices: newSpices }));
   };
 
+  const updateRecipe = (newRecipeData) => {
+    setRecipe((prevRecipe) => ({ ...prevRecipe, ...newRecipeData }));
+  };
+
   const updateTrays = (newTrays) => {
     setRecipe((prevRecipe) => ({ ...prevRecipe, trays: newTrays }));
   };
@@ -43,7 +47,7 @@ export const RecipeProvider = ({ children }) => {
   };
 
   return (
-    <RecipeContext.Provider value={{ recipe, updateSpices, updateTrays, updateInstructions }}>
+    <RecipeContext.Provider value={{ recipe, updateSpices, updateTrays, updateInstructions, updateRecipe }}>
       {children}
     </RecipeContext.Provider>
   );

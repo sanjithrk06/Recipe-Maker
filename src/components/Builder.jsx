@@ -103,7 +103,7 @@ const Builder = ({ type, setSaveClicked }) => {
   }
 
   return (
-    <div className="w-2/4 bg-white border border-gray-300 rounded-3xl m-2 p-4">
+    <div className="w-2/4 max-md:w-full bg-white border border-gray-300 rounded-3xl m-2 p-4">
       <div className="flex-1 flex flex-col items-center justify-between h-full">
         <div
           ref={drop}

@@ -117,7 +117,7 @@ const BuilderTray = ({ type, setSaveClicked }) => {
   };
 
   return (
-    <div className="w-2/4 bg-white border border-gray-300 rounded-3xl m-2 p-4">
+    <div className="w-2/4 max-md:w-full bg-white border border-gray-300 rounded-3xl m-2 p-4">
       <div className="flex-1 flex flex-col items-center justify-between h-full">
         {/* <div className="flex justify-end gap-3 w-full h-[10%] px-2 py-4">
           <div className="flex flex-row gap-2">
