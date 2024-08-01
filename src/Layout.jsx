@@ -14,7 +14,7 @@ const Layout = ({ type, handleTypeChange }) => {
       <div className="flex max-md:flex-col h-screen bg-slate-100">
         <Sidebar type={type} />
         {type === "ingredients" ? (
-          <BuilderTray type={type} setSaveClicked={setSaveClicked} />
+          <BuilderTray type={type} saveClicked={saveClicked} setSaveClicked={setSaveClicked} />
         ) : (
           <Builder type={type} setSaveClicked={setSaveClicked} />
         )}

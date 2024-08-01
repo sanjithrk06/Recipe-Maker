@@ -1,12 +1,11 @@
+import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useDrop } from 'react-dnd';
-import { useEffect, useState } from 'react';
 import { FaPlusCircle, FaRedo } from 'react-icons/fa';
 import { IoArrowRedoOutline, IoArrowUndoOutline } from "react-icons/io5";
-import { RxZoomIn, RxZoomOut } from "react-icons/rx";
-import { HiDotsVertical } from "react-icons/hi";
-import PropTypes from 'prop-types';
 import ItemModal from './ItemModal';
 import { useRecipe } from '../context/RecipeContext';
+import Alert from '@mui/material/Alert';
 
 const ItemTypes = {
   INGREDIENT: 'ingredient',
@@ -15,59 +14,54 @@ const ItemTypes = {
 const Builder = ({ type, setSaveClicked }) => {
   const [droppedItems, setDroppedItems] = useState([]);
   const [history, setHistory] = useState([]);
-  const [zoomLevel, setZoomLevel] = useState(1);
+  const [showWarning, setShowWarning] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentItem, setCurrentItem ] = useState(null);
-  const [droppedItemsPerTray, setDroppedItemsPerTray] = useState({});
-  const { recipe, updateSpices, updateInstructions } = useRecipe();
+  const [currentItem, setCurrentItem] = useState(null);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const { updateSpices, updateInstructions } = useRecipe();
 
   useEffect(() => {
     setDroppedItems([]);
-    setDroppedItemsPerTray({});
+    setShowWarning(false);
+    setZoomLevel(1);
   }, [type]);
 
+  useEffect(() => {
+    setSaveClicked(false);
+  }, [droppedItems]);
 
-  const [{ isOver }, drop] = useDrop(() => ({
+  const [{ isOver }, drop] = useDrop({
     accept: ItemTypes.INGREDIENT,
     drop: (item) => {
-      if(type==='instructions'){
-        setCurrentItem(item.ingredient)
-        setIsModalOpen(true)
-      }else{
-        setDroppedItems((prevItems) => [...prevItems, item.ingredient]);
+      const alreadyDropped = droppedItems.some(ingredient => ingredient.Iname === item.ingredient.Iname);
+      if (alreadyDropped) {
+        setShowWarning(true);
+        setTimeout(() => setShowWarning(false), 3000);
+      } else {
+        if (type === 'instructions') {
+          setCurrentItem(item.ingredient);
+          setIsModalOpen(true);
+        } else {
+          setDroppedItems((prevItems) => [...prevItems, item.ingredient]);
+        }
       }
-      console.log(`Dropped ${item.ingredient.name}`);
     },
     collect: (monitor) => ({
       isOver: monitor.isOver(),
     }),
-  }));
-  
-
-  useEffect(() => {
-    setSaveClicked(false)
-  }, [droppedItems])
+  });
 
   const handleSave = () => {
     if (type === 'spices') {
-      updateSpices(droppedItems.map(item => item.name));
+      updateSpices(droppedItems.map(item => item.Iname));
     } else if (type === 'instructions') {
       updateInstructions(droppedItems.map(item => ({
-        command: item.name,
+        command: item.Iname,
         value: item.value,
         unit: item.unit,
       })));
     }
-    console.log('Saved to context:', droppedItems.map(item => item.name));
-    setSaveClicked(true)
-  };
-
-  const handleZoomIn = () => {
-    setZoomLevel((prevZoom) => Math.min(prevZoom + 0.1, 1.2));
-  };
-
-  const handleZoomOut = () => {
-    setZoomLevel((prevZoom) => Math.max(prevZoom - 0.1, 0.4));
+    setSaveClicked(true);
   };
 
   const handleReset = () => {
@@ -92,49 +86,65 @@ const Builder = ({ type, setSaveClicked }) => {
   };
 
   const handleModalCancel = () => {
-    setCurrentItem(null)
-    setIsModalOpen(false)
-  }
+    setCurrentItem(null);
+    setIsModalOpen(false);
+  };
 
   const handleModalSave = (item) => {
-    setDroppedItems((prevItem) => [...prevItem, item]);
-    setIsModalOpen(false)
-    setCurrentItem(null)
-  }
+    setDroppedItems((prevItems) => [...prevItems, item]);
+    setIsModalOpen(false);
+    setCurrentItem(null);
+  };
+
+  const handleZoomIn = () => {
+    setZoomLevel((prevZoom) => Math.min(prevZoom + 0.1, 1.2));
+  };
+
+  const handleZoomOut = () => {
+    setZoomLevel((prevZoom) => Math.max(prevZoom - 0.1, 0.4));
+  };
 
   return (
     <div className="w-2/4 max-md:w-full bg-white border border-gray-300 rounded-3xl m-2 p-4">
+      {showWarning && (
+        <Alert severity="warning" className="absolute top-4 left-4">
+          This ingredient is already added!
+        </Alert>
+      )}
       <div className="flex-1 flex flex-col items-center justify-between h-full">
         <div
           ref={drop}
           id='drop-box'
-          style={{ scrollbarWidth: 'none'}}
+          style={{ scrollbarWidth: 'none' }}
           className={`flex items-center mt-5 overflow-y-auto justify-center border-2 border-dashed rounded-2xl ${isOver ? 'border-blue-500' : 'border-gray-300'} w-full h-[90%]`}
         >
           <div className="p-4 pt-0 w-[95%] h-[90%]" style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'center' }}>
-            {droppedItems.length < 1 && (
+            {droppedItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full">
                 <FaPlusCircle className="text-gray-400 text-6xl mb-4" />
-                <p className="text-gray-400 text-lg">Drop {type === 'ingredients' ? 'ingredients' : type === 'spices' ? 'spices' : 'instruction'} here</p>
+                <p className="text-gray-400 text-lg">Drop {type === 'ingredients' ? 'ingredients' : type === 'spices' ? 'spices' : 'instructions'} here</p>
               </div>
-            )}
-            {droppedItems.length > 0 && (
-              <div className=' mb-5'>
-                <p className="text-center text-3xl font-bold m-2">{type === 'ingredients' ? 'Ingredients' : type === 'spices' ? 'Spices' : 'Instruction'}</p>
+            ) : (
+              <div className='mb-5'>
+                <p className="text-center text-3xl font-bold m-2">{type === 'ingredients' ? 'Ingredients' : type === 'spices' ? 'Spices' : 'Instructions'}</p>
                 <div className="mt-6 grid grid-cols-2 gap-3">
                   {droppedItems.map((item, index) => (
-                    <div key={index} className="flex flex-col justify-end items-center mb-2">
+                    <div key={item.Ingredientid || index} className="flex flex-col justify-end items-center mb-2">
                       <div className="flex flex-row items-center justify-center bg-gray-200 gap-1 rounded-3xl w-full p-2 pt-0">
                         <div className="flex flex-col w-1/3">
-                          <img src={item.image} alt={item.name} className={` w-full h-[5rem] ${item.type==='instructions' ? 'object-contain p-4': 'object-cover'} rounded-2xl m-2 mb-0`} />
+                          <img src={item.Itype === 'instructions' ? (`${item.img_path}`) : (`https://mome.manoharmakarla.com/${item.img_path}`)} alt={item.Iname} className={`w-full h-[5rem] ${item.Itype === 'instructions' ? 'object-contain p-4' : 'object-cover'} rounded-2xl m-2 mb-0`} />
                         </div>
                         <div className="flex flex-col w-2/3">
-                          <p className="text-center text-lg font-semibold">{item.name}</p>
-                          <p className="text-center">{type === 'ingredients' ? '' : type === 'spices' ? '' : `${item.value} ${item.unit}`}</p> 
-                          <p className="text-center">{type === 'ingredients' ? '' : type === 'spices' ? '' : `${item.variety}`}</p> 
+                          <p className="text-center text-lg font-semibold">{item.Iname}</p>
+                          {type === 'instructions' && (
+                            <>
+                              <p className="text-center">{`${item.value} ${item.unit}`}</p>
+                              <p className="text-center">{`${item.variety}`}</p>
+                            </>
+                          )}
                         </div>
                       </div>
-                      {type === 'ingredients' ? '' : type === 'spices' ? '' : <p className="font-semibold text-base m-2">STEP-{index + 1}</p>}
+                      {type === 'instructions' && <p className="font-semibold text-base m-2">STEP-{index + 1}</p>}
                     </div>
                   ))}
                 </div>
@@ -157,13 +167,13 @@ const Builder = ({ type, setSaveClicked }) => {
             </button>
           </div>
           <div className="item-right">
-            <button onClick={handleSave} className={`bg-blue-600 text-white p-2 px-4 py-1.5 pb-[0.5rem] w-auto rounded-xl flex items-center font-medium text-base ${(setSaveClicked == true || droppedItems.length<1) ? "opacity-50" : ""}`} disabled={droppedItems.length === 0} >
+            <button onClick={handleSave} className={`bg-blue-600 text-white p-2 px-4 py-1.5 pb-[0.5rem] w-auto rounded-xl flex items-center font-medium text-base ${setSaveClicked == false ? "opacity-50" : ""}`} disabled={droppedItems.length === 0}>
               Save & continue
             </button>
           </div>
         </div>
       </div>
-      {type==='instructions' && isModalOpen && (
+      {type === 'instructions' && isModalOpen && (
         <ItemModal
           isOpen={isModalOpen}
           item={currentItem}
@@ -177,7 +187,7 @@ const Builder = ({ type, setSaveClicked }) => {
 
 Builder.propTypes = {
   type: PropTypes.string.isRequired,
-  setSaveClicked: PropTypes.func.isRequired
+  setSaveClicked: PropTypes.func.isRequired,
 };
 
 export default Builder;

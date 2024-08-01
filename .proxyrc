@@ -1,0 +1,5 @@
+{
+    "/api": {
+        "target" : "https://mome.manoharmakarla.com/apiv2/"
+    }
+}

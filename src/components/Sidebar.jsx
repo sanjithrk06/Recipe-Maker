@@ -1,65 +1,52 @@
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useRecipe } from '../context/RecipeContext';
+import { useData } from '../context/DataContext';
 import Ingredient from './Ingredient';
 import Instruction from './Instruction';
 import Accordion from './Accordion';
-import { data } from '../data/data';
 import LoadingSpinner from './LoadingSpinner';
 
 const Sidebar = ({ type }) => {
-  const [ingredients, setIngredients] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const { recipe } = useRecipe();
+  const { lspices, lingredients, linstructions, isloading } = useData();
   const [isInstructionsOpen, setInstructionsOpen] = useState(false);
   const [isIngredientsOpen, setIngredientsOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchIngredients = async () => {
-      try {
-        
-        setTimeout(() => {
-          setIngredients(data);
-          setLoading(false); 
-        }, 2000); 
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setLoading(false); 
-      }
-    };
-
-    fetchIngredients();
-  }, []);
-
+  
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
 
-  
-  const filteredIngredients = ingredients.filter(
+  const filteredSpicesIngredients = lspices.filter(
     (ingredient) =>
-      ingredient.type === type &&
-      ingredient.name.toLowerCase().includes(searchQuery.toLowerCase())
+      ingredient.Iname.toLowerCase().includes(searchQuery.toLowerCase()) 
   );
 
-  const filteredSpicesIngredients = ingredients.filter(
+  const filteredIngredients = lingredients.filter(
     (ingredient) =>
-      ingredient.type === 'spices' &&
-      ingredient.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      recipe.spices.some(spice => spice.toLowerCase() === ingredient.name.toLowerCase())
+      ingredient.Iname.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  
+  const filteredInstructions = linstructions.filter(
+    (ingredient) =>
+      ingredient.Iname.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const recipeSpices = lspices.filter(spice =>
+    recipe.spices.includes(spice.Iname)
   );
 
   const filteredTrays = Object.entries(recipe.trays).map(([trayName, trayContents]) => {
     const trayIngredients = trayContents.map(trayItem => {
-      const ingredient = ingredients.find(ing => ing.name.toLowerCase() === trayItem.ingredient.toLowerCase());
+      const ingredient = filteredIngredients.find(ing => ing.Iname.toLowerCase() === trayItem.ingredient.toLowerCase());
       return ingredient;
     }).filter(ingredient => ingredient !== undefined);
     return trayIngredients;
   }).flat();
 
   const combinedIngredients = [
-    ...filteredSpicesIngredients,
+    ...recipeSpices,
     ...filteredTrays
   ];
 
@@ -75,6 +62,8 @@ const Sidebar = ({ type }) => {
         {type === 'instructions' && (
           <h1 className="text-3xl text-center italic font-semibold p-5">Instructions</h1>
         )}
+
+        {/* search box */}
         <div className="pt-2 relative mx-auto text-gray-600 w-full">
           <input
             className="border-2 border-gray-300 bg-white h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none w-full"
@@ -106,47 +95,61 @@ const Sidebar = ({ type }) => {
       <div className="scroll-container">
         {type === 'instructions' ? (
           <>
+            {/* instructions list */}
             <Accordion
               title="Instructions"
               isOpen={isInstructionsOpen}
               onToggle={() => setInstructionsOpen(!isInstructionsOpen)}
             >
-              {loading ? (
+              {isloading ? (
                 <LoadingSpinner />
               ) : (
                 <div className="flex flex-col gap-2">
-                  {filteredIngredients.map((ingredient) => (
-                    <Instruction key={ingredient.id} ingredient={ingredient} />
+                  {filteredInstructions.map((ingredient) => (
+                    <Instruction key={ingredient.Ingredientid} ingredient={ingredient} />
                   ))}
                 </div>
               )}
             </Accordion>
             <hr />
+            {/* ingredients & spices list */}
             <Accordion
               title="Ingredients & Spices"
               isOpen={isIngredientsOpen}
               onToggle={() => setIngredientsOpen(!isIngredientsOpen)}
             >
-              {loading ? (
+              {isloading ? (
                 <LoadingSpinner />
               ) : (
                 <div className="grid grid-cols-3 gap-2">
                   {combinedIngredients.map((ingredient) => (
-                    <Ingredient key={ingredient.id} ingredient={ingredient} />
+                    <Ingredient key={ingredient.Ingredientid} ingredient={ingredient} />
                   ))}
                 </div>
               )}
             </Accordion>
             <hr />
           </>
-        ) : (
+        ) : type === 'spices' ? (
           <>
-            {loading ? (
+            {isloading ? (
               <LoadingSpinner />
             ) : (
               <div className="grid grid-cols-3 gap-2">
-                {filteredIngredients.map((ingredient) => (
-                  <Ingredient key={ingredient.id} ingredient={ingredient} />
+                {filteredSpicesIngredients.map((ingredient) => (
+                  <Ingredient key={ingredient.Ingredientid} ingredient={ingredient} />
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            {isloading ? (
+              <LoadingSpinner />
+            ) : (
+              <div className="grid grid-cols-3 gap-2">
+                {filteredIngredients.map((ingredient, index) => (
+                  <Ingredient key={index} ingredient={ingredient} />
                 ))}
               </div>
             )}

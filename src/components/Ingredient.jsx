@@ -14,16 +14,20 @@ const Ingredient = ({ ingredient }) => {
     }),
   }));
 
+  if (!ingredient.Ingredientid) {
+    console.warn('Ingredient is missing an id:', ingredient);
+  }
+
   return (
     <div
       ref={drag}
       className={`bg-gray-100 p-2 cursor-move rounded-2xl ${isDragging ? 'opacity-50' : 'opacity-100'}`}
     >
       <div className="w-full">
-        <img src={ingredient.image} alt={ingredient.name} className={` w-full h-32 ${ingredient.type==='instructions' ? 'object-contain p-4 h-20': 'object-cover'} rounded-2xl `} />
+        <img src={`https://mome.manoharmakarla.com/${ingredient.img_path}`} alt={ingredient.Iname} className={` w-full h-32 ${ingredient.Itype==='instructions' ? 'object-contain p-4 h-20': 'object-cover'} rounded-2xl `} />
       </div>
       <p className="text-center mt-1 p-2 text-sm font-medium">
-        {ingredient.name}
+        {ingredient.Iname}
       </p>
     </div>
   );
@@ -31,11 +35,11 @@ const Ingredient = ({ ingredient }) => {
 
 Ingredient.propTypes = {
   ingredient: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-    image: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-  }).isRequired,
+    Ingredientid: PropTypes.number,
+    Iname: PropTypes.string.isRequired,
+    img_path: PropTypes.string.isRequired,
+    Itype: PropTypes.string,
+  }),
 };
 
 export default Ingredient;

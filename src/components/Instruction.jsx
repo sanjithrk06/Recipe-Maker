@@ -20,10 +20,10 @@ const Instruction = ({ ingredient }) => {
       className={`bg-gray-100 p-2 cursor-move rounded-2xl flex ${isDragging ? 'opacity-50' : 'opacity-100'}`}
     >
       <div className="w-1/4">
-        <img src={ingredient.image} alt={ingredient.name} className="w-full h-20 object-contain p-2 rounded-2xl" />
+        <img src={ingredient.img_path} alt={ingredient.Iname} className="w-full h-20 object-contain p-2 rounded-2xl" />
       </div>
       <div className="w-3/4 flex items-center pl-2">
-        <p className="text-sm font-medium">{ingredient.name}</p>
+        <p className="text-sm font-medium">{ingredient.Iname}</p>
       </div>
     </div>
   );
@@ -31,11 +31,11 @@ const Instruction = ({ ingredient }) => {
 
 Instruction.propTypes = {
   ingredient: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-    image: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-  }).isRequired,
+    ingredientid: PropTypes.number,
+    Iname: PropTypes.string.isRequired,
+    img_path: PropTypes.string.isRequired,
+    Itype: PropTypes.string.isRequired,
+  }),
 };
 
 export default Instruction;

@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "proxy": "https://mome.manoharmakarla.com/apiv2/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -10,15 +11,21 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "-": "^0.0.1",
+    "@emotion/react": "^11.13.0",
+    "@emotion/styled": "^11.13.0",
     "@material-tailwind/react": "^2.1.9",
+    "@mui/material": "^5.16.6",
     "@tailwindcss/line-clamp": "^0.4.4",
     "fa": "^1.0.1",
+    "http-proxy-middleware": "^3.0.0",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.2.0",
-    "react-icons": "^5.2.1"
+    "react-icons": "^5.2.1",
+    "save-dev": "^0.0.1-security"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
