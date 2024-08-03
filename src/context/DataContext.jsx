@@ -12,8 +12,8 @@ export const DataProvider = ({ children }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const spiceResponse = await fetch('/api/save.php?ltype=spice');
-        const ingredientResponse = await fetch('/api/save.php?ltype=ingredient');
+        const spiceResponse = await fetch('https://mome.manoharmakarla.com/apiv2/save.php?ltype=spice');
+        const ingredientResponse = await fetch('https://mome.manoharmakarla.com/apiv2/save.php?ltype=ingredient');
 
         if (!spiceResponse.ok || !ingredientResponse.ok) {
           throw new Error('Failed to fetch data');
